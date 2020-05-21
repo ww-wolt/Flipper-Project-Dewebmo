@@ -10,7 +10,6 @@ export class CollisionDetection{
         // this._debugPoint = new Circle(table, new Victor(0,0), 10);
     }
 
-
     addMovingObject(collidableObj){
         const collisionShape = collidableObj.getCollisionShape();
         collisionShape.addMoveListener(this.update.bind(this));
@@ -23,77 +22,84 @@ export class CollisionDetection{
 
     // does Collision Detection Stuff
     update(){
-        this._movingObjects.forEach((movingItem) =>{
-            this._staticObjects.forEach((staticItem) => {
-                this.collide(movingItem, staticItem)
+        this._movingObjects.forEach((movingShape) =>{
+            this._staticObjects.forEach((staticShape) => {
+                this.collide(movingShape, staticShape)
             })
         })
     }
 
 
     // collides 2 objects
-    collide(movingItem, staticItem){
+    collide(movingShape, staticShape){
 
         // check first for Bounding Box Collision
         // only do detail Collision if necessary
-        if(this.boundingBoxesCollision(movingItem, staticItem)){
-            
-            // Circle-Circle Collision
-            if( movingItem instanceof CollisionCircle && staticItem instanceof CollisionCircle){
-                this.collideCircleCircle(movingItem, staticItem);
+        if(this.boundingBoxesCollision(movingShape, staticShape)){
 
-            // Circle-Line Collision
-            }else if(movingItem instanceof CollisionCircle && staticItem instanceof CollisionLine){
-                this.collideCircleLine(movingItem, staticItem);
+            if(movingShape instanceof CollisionCircle){
+                
+                // Circle-Circle Collision
+                if(staticShape instanceof CollisionCircle){
+                    this.collideCircleCircle(movingShape, staticShape);
+
+                // Circle-Line Collision
+                }else if(staticShape instanceof CollisionLine){
+                    this.collideCircleLine(movingShape, staticShape);
+                
+                 // Circle-ComplexShape Collision
+                }else if(staticShape instanceof ComplexCollisionShape){
+                    this.collideCircleComplexShape(movingShape, staticShape);
+                }
             }
         }
     }
 
-    boundingBoxesCollision(movingItem, staticItem){
-        const bb1 = movingItem.getBoundingBox();
-        const bb2 = staticItem.getBoundingBox();
+    boundingBoxesCollision(movingShape, staticShape){
+        const bb1 = movingShape.getBoundingBox();
+        const bb2 = staticShape.getBoundingBox();
 
         return ( 
             bb1.minX < bb2.maxX && 
             bb1.maxX > bb2.minX && 
             bb1.minY < bb2.maxY && 
-            bb1.maxY > bb2.minY );
-
-
-        // return ! (
-        //     (bb1.maxY < bb2.minY) ||
-        //     (bb1.minY > bb2.maxY) ||
-        //     (bb1.minX > bb2.maxX) ||
-        //     (bb1.maxX < bb2.minX) 
-        // );
-            
+            bb1.maxY > bb2.minY );        
     }
-    
-    collideCircleCircle(movingItem, staticItem){
-        const distX = movingItem.pos.x - staticItem.pos.x;
-        const distY = movingItem.pos.y - staticItem.pos.y;
+
+    collideCircleComplexShape(movingShape, staticShape){
+
+        // staticShape is complex, so iterate over every (simple) collision shape
+        staticShape.collisionShapes.forEach((shape) => {
+            this.collide(movingShape, shape)
+        });
+    }
+
+
+    collideCircleCircle(movingShape, staticShape){
+        const distX = movingShape.pos.x - staticShape.pos.x;
+        const distY = movingShape.pos.y - staticShape.pos.y;
         const distSquared = Math.pow(distX,2) + Math.pow(distY,2);
-        const maxRadiusSquared = Math.pow(movingItem.radius + staticItem.radius,2);
+        const maxRadiusSquared = Math.pow(movingShape.radius + staticShape.radius,2);
 
         if(distSquared < maxRadiusSquared){
 
             // Normalenvektor (für Reflektion) berechnen
-            const normal = movingItem.pos.subtract(staticItem.pos).normalize();
+            const normal = movingShape.pos.subtract(staticShape.pos).normalize();
 
             // Collisionspunkte für beide Objekte berechnen
-            const collisionPointStaticItem = staticItem.pos;
-            const vec = normal.clone().multiplyScalar(staticItem.radius + movingItem.radius);
-            const collisionPointMovingItem = staticItem.pos.clone().add(vec);
+            const collisionPointStaticShape = staticShape.pos;
+            const vec = normal.clone().multiplyScalar(staticShape.radius + movingShape.radius);
+            const collisionPointMovingShape = staticShape.pos.clone().add(vec);
             
-            movingItem.hasCollided(staticItem, collisionPointMovingItem, normal);
-            staticItem.hasCollided(movingItem, collisionPointStaticItem, normal);
+            movingShape.hasCollided(staticShape, collisionPointMovingShape, normal);
+            staticShape.hasCollided(movingShape, collisionPointStaticShape, normal);
         }
     }
 
-    collideCircleLine(movingItem, staticItem){
+    collideCircleLine(movingShape, staticShape){
 
-        const circle = movingItem; 
-        const line = staticItem; 
+        const circle = movingShape; 
+        const line = staticShape; 
 
         const p = circle.pos; // Middle Point of Circle
         const g = line.getLineVector(); // Geradenvektor
@@ -102,48 +108,30 @@ export class CollisionDetection{
         // Minimalstelle berechnen
         const t = (g.x * (p.x - r.x) + g.y * (p.y - r.y)) / (g.x*g.x + g.y*g.y); 
 
-        // nearest Point
+        // Punkt auf Linie ausrechnen
         const nearestPoint = new Victor(r.x + t * g.x, r.y + t * g.y);
 
-        //this._debugPoint.setPos(nearestPoint);
-        
-        console.log("CircleLine: Before if")
+        const connectionVector = p.clone().subtract(nearestPoint);
+        const distSquared = Math.pow(connectionVector.length(), 2)
+        const maxRadiusSquared = Math.pow(circle.radius,2)
 
-        // liegt Punkt zwischen Anfang und Endpunkt der Linie ?
-        if(this.pMiddleOfAB(nearestPoint.x, line.a.x, line.b.x) && this.pMiddleOfAB(nearestPoint.y, line.a.y, line.b.y)){
-        
-            console.log("CircleLine: After if")
+        // Handelt es sich effektiv um Kollision?
+        if(distSquared < maxRadiusSquared){
 
-            const connectionVector = p.clone().subtract(nearestPoint);
-            const distSquared = Math.pow(connectionVector.length(), 2)
-            const maxRadiusSquared = Math.pow(circle.radius,2)
+            // Normalenvektor (für Reflektion) berechnen
+            const normal = connectionVector.normalize();
 
-            if(distSquared < maxRadiusSquared){
+            // Collisionspunkte für beide Objekte berechnen
+            const collisionPointStaticShape = nearestPoint;
+            const vec = normal.clone().multiplyScalar(circle.radius);
+            const collisionPointMovingShape = nearestPoint.clone().add(vec);
 
-                // Normalenvektor (für Reflektion) berechnen
-                const normal = connectionVector.normalize();
-
-                // Collisionspunkte für beide Objekte berechnen
-                const collisionPointStaticItem = nearestPoint;
-                const vec = normal.clone().multiplyScalar(circle.radius);
-                const collisionPointMovingItem = nearestPoint.clone().add(vec);
-                
-                movingItem.hasCollided(staticItem, collisionPointMovingItem, normal);
-                staticItem.hasCollided(movingItem, collisionPointStaticItem, normal);
-            }
-
+            // Notify Listeners
+            movingShape.hasCollided(staticShape, collisionPointMovingShape, normal);
+            staticShape.hasCollided(movingShape, collisionPointStaticShape, normal);
         }
     }
-
-    pMiddleOfAB(p,a,b){
-        const arr = [p,a,b];
-        arr.sort((a, b) => a - b);
-        return arr[1] === p;
-    }
-
 }
-
-
 
 export class CollisionShape{
 
