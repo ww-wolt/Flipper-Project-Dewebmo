@@ -12,8 +12,8 @@ export class Ball{
         this._ms = 15;
         this._bounciness = 0.7;
 
-        this._velocityArrow = new Arrow(table, 10);
-        this._velocityArrow.setEnabled(true);
+        this._velocityArrow = new Arrow(parent, 10);
+        this._velocityArrow.setEnabled(false);
 
         // Initialize Animation
         this._animation = this._circle.elem.animate({},{duration: this._ms});
