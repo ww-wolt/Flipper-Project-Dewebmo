@@ -11,14 +11,23 @@ export class CollisionDetection{
     }
 
     addMovingObject(collidableObj){
-        const collisionShape = collidableObj.getCollisionShape();
+        this.addMovingShape(collidableObj.getCollisionShape());
+    }
+
+    addMovingShape(collisionShape){
         collisionShape.addMoveListener(this.update.bind(this));
         this._movingObjects.push(collisionShape);
     }
 
     addStaticObject(collidableObj){
-        this._staticObjects.push(collidableObj.getCollisionShape());
+        this.addStaticShape(collidableObj.getCollisionShape());
     }
+
+    addStaticShape(collisionShape){
+        this._staticObjects.push(collisionShape);
+    }
+
+
 
     // does Collision Detection Stuff
     update(){
@@ -28,7 +37,6 @@ export class CollisionDetection{
             })
         })
     }
-
 
     // collides 2 objects
     collide(movingShape, staticShape){
@@ -73,7 +81,6 @@ export class CollisionDetection{
             this.collide(movingShape, shape)
         });
     }
-
 
     collideCircleCircle(movingShape, staticShape){
         const distX = movingShape.pos.x - staticShape.pos.x;
@@ -140,7 +147,6 @@ export class CollisionShape{
         this._collisionListeners = [];
         this._moveListeners = [];
         this.bounciness = 1;
-        this.boundingBox = null;
     }
 
     addMoveListener(callback){
@@ -209,12 +215,12 @@ export class CollisionLine extends CollisionShape{
 
 export class ComplexCollisionShape extends CollisionShape{
     
-    constructor(name, ...collisionShapes){
+    constructor(name, collisionShapes){
         super(name);
         this.collisionShapes = collisionShapes;
     }
 
-    get boundingBox(){
+    getBoundingBox(){
         
         const boundingBoxes = this.collisionShapes.map(shape => shape.getBoundingBox());
         const minX = Math.min(...boundingBoxes.map(bb => bb.minX));
