@@ -3,68 +3,89 @@ import { Circle } from './Circle.mjs';
 export class CollisionDetection{
 
     constructor(){
-        this._movingObjects = [];
-        this._staticObjects = [];
-
-        // const table = document.getElementById('table');
-        // this._debugPoint = new Circle(table, new Victor(0,0), 10);
+        this._dynamicShapes = [];
+        this._kinematicShapes = [];
+        this._staticShapes = [];
     }
 
-    addMovingObject(collidableObj){
-        this.addMovingShape(collidableObj.getCollisionShape());
+    addDynamicObject(collidableObj){
+        this.addDynamicShape(collidableObj.getCollisionShape());
     }
 
-    addMovingShape(collisionShape){
-        collisionShape.addMoveListener(this.update.bind(this));
-        this._movingObjects.push(collisionShape);
+    addDynamicShape(collisionShape){
+        collisionShape.addMoveListener(this.updateDynamic.bind(this));
+        this._dynamicShapes.push(collisionShape);
     }
 
-    addStaticObject(collidableObj){
+    addKinematicObject(collidableObj){
+        this.addKinematicShape(collidableObj.getCollisionShape());
+    }
+
+    addKinematicShape(collisionShape){
+        collisionShape.addMoveListener(this.updateKinematic.bind(this));
+        this._kinematicShapes.push(collisionShape);
+    }
+
+    addStaticObject(collidableObj){ 
         this.addStaticShape(collidableObj.getCollisionShape());
     }
 
     addStaticShape(collisionShape){
-        this._staticObjects.push(collisionShape);
+        this._staticShapes.push(collisionShape);
     }
 
 
 
     // does Collision Detection Stuff
-    update(){
-        this._movingObjects.forEach((movingShape) =>{
-            this._staticObjects.forEach((staticShape) => {
-                this.collide(movingShape, staticShape)
+
+    updateDynamic(){
+        this._dynamicShapes.forEach((dynamicShape) =>{
+            this._staticShapes.forEach((staticShape) => {
+                this.detect(dynamicShape, staticShape)
+            })
+            this._kinematicShapes.forEach((kinematicShape) => {
+                this.detect(dynamicShape, kinematicShape)
             })
         })
     }
 
-    // collides 2 objects
-    collide(movingShape, staticShape){
+    updateKinematic(){
+        this._dynamicShapes.forEach((dynamicShape) =>{
+            this._kinematicShapes.forEach((kinematicShape) => {
+                this.detect(dynamicShape, kinematicShape)
+            })
+        })
+    }
+
+
+
+    // detects Collision between two objects
+    detect(dynamicShape, staticShape){
 
         // check first for Bounding Box Collision
         // only do detail Collision if necessary
-        if(this.boundingBoxesCollision(movingShape, staticShape)){
+        if(this.boundingBoxesCollision(dynamicShape, staticShape)){
 
-            if(movingShape instanceof CollisionCircle){
+            if(dynamicShape instanceof CollisionCircle){
                 
                 // Circle-Circle Collision
                 if(staticShape instanceof CollisionCircle){
-                    this.collideCircleCircle(movingShape, staticShape);
+                    this.detectCircleCircle(dynamicShape, staticShape);
 
                 // Circle-Line Collision
                 }else if(staticShape instanceof CollisionLine){
-                    this.collideCircleLine(movingShape, staticShape);
+                    this.detectCircleLine(dynamicShape, staticShape);
                 
                  // Circle-ComplexShape Collision
                 }else if(staticShape instanceof ComplexCollisionShape){
-                    this.collideCircleComplexShape(movingShape, staticShape);
+                    this.detectCircleComplexShape(dynamicShape, staticShape);
                 }
             }
         }
     }
 
-    boundingBoxesCollision(movingShape, staticShape){
-        const bb1 = movingShape.getBoundingBox();
+    boundingBoxesCollision(dynamicShape, staticShape){
+        const bb1 = dynamicShape.getBoundingBox();
         const bb2 = staticShape.getBoundingBox();
 
         return ( 
@@ -74,38 +95,38 @@ export class CollisionDetection{
             bb1.maxY > bb2.minY );        
     }
 
-    collideCircleComplexShape(movingShape, staticShape){
+    detectCircleComplexShape(dynamicShape, staticShape){
 
         // staticShape is complex, so iterate over every (simple) collision shape
         staticShape.collisionShapes.forEach((shape) => {
-            this.collide(movingShape, shape)
+            this.detect(dynamicShape, shape)
         });
     }
 
-    collideCircleCircle(movingShape, staticShape){
-        const distX = movingShape.pos.x - staticShape.pos.x;
-        const distY = movingShape.pos.y - staticShape.pos.y;
+    detectCircleCircle(dynamicShape, staticShape){
+        const distX = dynamicShape.pos.x - staticShape.pos.x;
+        const distY = dynamicShape.pos.y - staticShape.pos.y;
         const distSquared = Math.pow(distX,2) + Math.pow(distY,2);
-        const maxRadiusSquared = Math.pow(movingShape.radius + staticShape.radius,2);
+        const maxRadiusSquared = Math.pow(dynamicShape.radius + staticShape.radius,2);
 
         if(distSquared < maxRadiusSquared){
 
             // Normalenvektor (für Reflektion) berechnen
-            const normal = movingShape.pos.subtract(staticShape.pos).normalize();
+            const normal = dynamicShape.pos.clone().subtract(staticShape.pos).normalize();
 
             // Collisionspunkte für beide Objekte berechnen
             const collisionPointStaticShape = staticShape.pos;
-            const vec = normal.clone().multiplyScalar(staticShape.radius + movingShape.radius);
-            const collisionPointMovingShape = staticShape.pos.clone().add(vec);
+            const vec = normal.clone().multiplyScalar(staticShape.radius + dynamicShape.radius);
+            const collisionPointDynamicShape = staticShape.pos.clone().add(vec);
             
-            movingShape.hasCollided(staticShape, collisionPointMovingShape, normal);
-            staticShape.hasCollided(movingShape, collisionPointStaticShape, normal);
+            dynamicShape.hasCollided(staticShape, collisionPointDynamicShape, normal);
+            staticShape.hasCollided(dynamicShape, collisionPointStaticShape, normal);
         }
     }
 
-    collideCircleLine(movingShape, staticShape){
+    detectCircleLine(dynamicShape, staticShape){
 
-        const circle = movingShape; 
+        const circle = dynamicShape; 
         const line = staticShape; 
 
         const p = circle.pos; // Middle Point of Circle
@@ -131,11 +152,11 @@ export class CollisionDetection{
             // Collisionspunkte für beide Objekte berechnen
             const collisionPointStaticShape = nearestPoint;
             const vec = normal.clone().multiplyScalar(circle.radius);
-            const collisionPointMovingShape = nearestPoint.clone().add(vec);
+            const collisionPointDynamicShape = nearestPoint.clone().add(vec);
 
             // Notify Listeners
-            movingShape.hasCollided(staticShape, collisionPointMovingShape, normal);
-            staticShape.hasCollided(movingShape, collisionPointStaticShape, normal);
+            dynamicShape.hasCollided(staticShape, collisionPointDynamicShape, normal);
+            staticShape.hasCollided(dynamicShape, collisionPointStaticShape, normal);
         }
     }
 }
