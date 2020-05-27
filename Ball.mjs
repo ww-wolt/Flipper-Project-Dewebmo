@@ -41,8 +41,8 @@ export class Ball{
         this._circle._collisionShape.pos = this._newPos;
     }
 
-    applyForce(){
-
+    applyForce(forceVector){
+        this._velocity.add(forceVector);
     }
 
     updatePhysics(){
@@ -61,6 +61,8 @@ export class Ball{
 
         // After Animation set pos to new
         this._circle._pos = this._newPos;
+        
+
     }
 
     animate(){

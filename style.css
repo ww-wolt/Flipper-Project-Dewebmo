@@ -10,12 +10,11 @@ body{
     padding: 0;
 }
 
-#table{
-    width: 1000px;
-    height: 100vh;
+.table{
     background-color: rgba(85, 85, 85, 0.4);
     margin: 0 auto;
     position: relative;
+    border: 1px solid black;
 }
 
 .bumper{
@@ -44,17 +43,12 @@ body{
     100% {box-shadow: 20px 20px 40px 20px greenyellow;}
 }
 
-#flipper-right{
-    width: 100px;
-    height: auto;
-    position: absolute;
-    top: 500px;
-    right: 200px;
+.flipper-right{
     transform-origin: 82% 50%;
     transform: rotateZ(-32deg);
 }
 
-#flipper-left{
+.flipper-left{
     width: 100px;
     height: auto;
     position: absolute;
