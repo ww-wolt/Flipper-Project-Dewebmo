@@ -9,8 +9,12 @@ export class Flipper{
         this._pos = pos;
         this._key = key;
 
-        this._ms = 15;
-        this._duration = 60;
+        this._ms = 5;
+        this._duration = 1000;
+        this.angle = -32;
+        this.isKicking = false;
+
+        this._currentTime = 0;
 
         // Create DOM-Element
         this.img = document.createElement('IMG');
@@ -20,7 +24,7 @@ export class Flipper{
         this.img.style.height = 'auto';
         this.img.style.position = 'absolute';
         this.img.classList.add(cssClass);
-        this.img.style.transform = 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+'-32deg'+')';
+        this.img.style.transform = 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+this.angle+'deg)';
 
         // Append DOM-Element
         parent.appendChild(this.img);
@@ -51,12 +55,31 @@ export class Flipper{
 
     up(){
         this.turnFlipper("-32deg", "10deg");
-        setInterval(this.getAngleFromAnimationState.bind(this), this._ms);
 
+        this.isKicking = true;
+        const updateFunc = setInterval(this.updateAngleUp.bind(this), this._ms);
+
+        var onAnimFinishFunc = function(){
+            this.isKicking = false;
+            clearInterval(updateFunc)
+            //this._ms = 0;
+        };
+        this._animation.onfinish = onAnimFinishFunc.bind(this);
     }
 
     down(){
+
+        //this._animation.pause();
+        //this._animation.reverse();
         this.turnFlipper("10deg", "-32deg");
+
+        const updateFunc = setInterval(this.updateAngleDown.bind(this), this._ms);
+
+        var onAnimFinishFunc = function(){
+            clearInterval(updateFunc)
+            //this._ms = 0;
+        };
+        this._animation.onfinish = onAnimFinishFunc.bind(this);
     }
 
     logAnimationState(){
@@ -83,8 +106,18 @@ export class Flipper{
         return angle;
     }
 
-    updateAngle(){
-        
+    updateAngleUp(){
+        this.angle = (this._currentTime / this._duration) * 42 -32;
+        console.log('Flipper -> updateAngleUp -> this.angle', this.angle)
+        this._currentTime += this._ms;
+
+        //this.angle = (this._animation.currentTime / this._duration) * 42 -32;
+    }
+
+    updateAngleDown(){
+        this.angle = (this._currentTime / this._duration) * -42 + 10;
+        console.log('Flipper -> updateAngleDown -> this.angle', this.angle)
+        this._currentTime += this._ms;
     }
     
 }
