@@ -1,26 +1,36 @@
 
 //const DaysEnum = Object.freeze({"monday":1, "tuesday":2, "wednesday":3, ...})
 
+import { Line } from './line.mjs';
+
 export class Flipper{
 
-    constructor(parent, assetSrc, cssClass, pos, width, key){
+    constructor(parent, assetSrc, cssClass, pos, startAngle, key){
 
 
         this._pos = pos;
+        this.angle = startAngle;
         this._key = key;
+        this._width = 100;
 
-        this._ms = 5;
-        this._duration = 1000;
-        this.angle = -32;
+        this._ms = 2;
+        this._duration = 60;
+        
         this.isKicking = false;
-
         this._currentTime = 0;
+
+        this._line = new Line(parent, pos, pos, 4);
+        this.updateLine();
+
+        this._collisionShape = this._line.getCollisionShape();
+        this._collisionShape.bounciness = 0.7;
+
 
         // Create DOM-Element
         this.img = document.createElement('IMG');
         this.img.src = assetSrc;
         this.img.alt = 'Flipper';
-        this.img.style.width = width + 'px';
+        this.img.style.width = this._width + 'px';
         this.img.style.height = 'auto';
         this.img.style.position = 'absolute';
         this.img.classList.add(cssClass);
@@ -29,24 +39,18 @@ export class Flipper{
         // Append DOM-Element
         parent.appendChild(this.img);
 
-         // Initialize Animation
-         this._animation = this.img.animate({},{duration:0});
-
-         // Animation Loop
-         //this._animation.onfinish = this.updatePhysics.bind(this);
+        this.initAnimation();
 
 
         let isPressed = false;
         document.addEventListener('keydown', event => {
             if(event.key == this._key & !isPressed){ 
-                console.log(this._key + " pressed")
                 isPressed = true;
                 this.up();
             }})
         
         document.addEventListener('keyup', event => {
             if(event.key == this._key & isPressed){ 
-                console.log(this._key + " released")
                 isPressed = false;
                 this.down();
             }})
@@ -54,30 +58,34 @@ export class Flipper{
     }
 
     up(){
-        this.turnFlipper("-32deg", "10deg");
+        //this.turnFlipper("-32deg", "10deg");
+        this._animation.pause();
+        this._animation.reverse();
 
         this.isKicking = true;
-        const updateFunc = setInterval(this.updateAngleUp.bind(this), this._ms);
+        const updateFunc = setInterval(this.updateAngle.bind(this), this._ms);
 
         var onAnimFinishFunc = function(){
             this.isKicking = false;
             clearInterval(updateFunc)
-            //this._ms = 0;
+            this._currentTime = 0;
+            this.updateAngle();
         };
         this._animation.onfinish = onAnimFinishFunc.bind(this);
     }
 
     down(){
 
-        //this._animation.pause();
-        //this._animation.reverse();
-        this.turnFlipper("10deg", "-32deg");
+        this._animation.pause();
+        this._animation.reverse();
+        //this.turnFlipper("10deg", "-32deg");
 
-        const updateFunc = setInterval(this.updateAngleDown.bind(this), this._ms);
+        const updateFunc = setInterval(this.updateAngle.bind(this), this._ms);
 
         var onAnimFinishFunc = function(){
             clearInterval(updateFunc)
-            //this._ms = 0;
+            this._currentTime = 0;
+            this.updateAngle();
         };
         this._animation.onfinish = onAnimFinishFunc.bind(this);
     }
@@ -87,51 +95,116 @@ export class Flipper{
         
     }
 
-    turnFlipper(from, to){
-        this._animation = this.img.animate([   
-            {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+from+')'},
-            {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+to+')'},
-        ], 
-        {duration: this._duration,  fill: 'both'});
-  
-        //this.logAnimationState();
-        //this._animation.onfinish = this.logAnimationState.bind(this);
+    
+
+    // turnFlipper(from, to){
+    //     this._animation = this.img.animate([   
+    //         {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+from+')'},
+    //         {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ('+to+')'},
+    //     ], 
+    //     {duration: this._duration,  fill: 'both'});      
+    // }
+
+
+    
+
+
+
+    updateAngleUp(){
+        //this.angle = (this._currentTime / this._duration) * 42 -32;
+        this.angle = (this._animation.currentTime / this._duration) * 42 -32;
+        this._currentTime += this._ms;
+
+        this.updateLine();
         
     }
 
-    getAngleFromAnimationState(){
-        console.log('Animation State: ' + this._animation.currentTime );
-        const angle = (this._animation.currentTime / this._duration) * 42 -32;
-        //console.log('Flipper -> getAngleFromAnimationState -> angle', angle)
-        return angle;
-    }
-
-    updateAngleUp(){
-        this.angle = (this._currentTime / this._duration) * 42 -32;
-        console.log('Flipper -> updateAngleUp -> this.angle', this.angle)
-        this._currentTime += this._ms;
-
-        //this.angle = (this._animation.currentTime / this._duration) * 42 -32;
-    }
-
     updateAngleDown(){
-        this.angle = (this._currentTime / this._duration) * -42 + 10;
-        console.log('Flipper -> updateAngleDown -> this.angle', this.angle)
+        //this.angle = (this._currentTime / this._duration) * -42 + 10;
+        this.angle = (this._animation.currentTime / this._duration) * -42 + 10;
+        //console.log('Flipper -> updateAngleDown -> this.angle', this.angle)
         this._currentTime += this._ms;
+
+        this.updateLine();
+    }
+
+    getCollisionShape(){
+        return this._collisionShape;
     }
     
 }
 
 export class RightFlipper extends Flipper{
     constructor(parent, pos, width){
-        super(parent, 'Assets/flipper-right.png', 'flipper-right', pos, width, 'ArrowRight')
+        super(parent, 'Assets/flipper-right.png', 'flipper-right', pos, -32, 'ArrowRight')
+    }
+
+    initAnimation(){
+        // Initialize Animation
+        this._animation = this.img.animate([   
+           {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ(10deg)'},
+           {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ(-32deg)'},
+       ], 
+       {duration: this._duration,  fill: 'both'}); 
+   }
+
+   updateAngle(){
+        this.angle = (this._animation.currentTime / this._duration) * -42 + 10;
+        this.updateLine();
+    }
+
+
+   updateLine(){
+
+        const a =  this._pos.clone().add(new Victor(0, 18));
+        const b =  a.clone().add(new Victor(this._width-18, 0));
+
+        const aOffset = new Victor(0, -7).rotateDeg(this.angle);
+        const bOffset = new Victor(9, -18).rotateDeg(this.angle);
+
+        const vec = b.clone().subtract(a);
+        vec.rotateDeg(this.angle)
+
+        const a2 = b.clone().subtract(vec);
+
+        this._line.setCoordinates(a2.add(aOffset), b.add(bOffset))
     }
 
 }
 
 export class LeftFlipper extends Flipper{
     constructor(parent, pos, width){
-
+        super(parent, 'Assets/flipper-left.png', 'flipper-left', pos, 32, 'ArrowLeft')
     }
+
+    initAnimation(){
+        // Initialize Animation
+        this._animation = this.img.animate([   
+           {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ(-10deg)'},
+           {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)' + 'rotateZ(32deg)'},
+       ], 
+       {duration: this._duration,  fill: 'both'}); 
+   }
+
+   updateAngle(){
+        this.angle = (this._animation.currentTime / this._duration) * 42 + -10;
+        this.updateLine();
+    }
+
+   updateLine(){
+
+        const a =  this._pos.clone().add(new Victor(18, 18));
+        const b =  a.clone().add(new Victor(this._width-18, 0));
+
+        const aOffset = new Victor(-9, -18).rotateDeg(this.angle);
+        const bOffset = new Victor(0, -7).rotateDeg(this.angle);
+
+        const vec = a.clone().subtract(b);
+        vec.rotateDeg(this.angle)
+
+        const b2 = a.clone().subtract(vec);
+
+        this._line.setCoordinates(a.add(aOffset), b2.add(bOffset));
+}
 
 }
