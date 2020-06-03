@@ -4,7 +4,7 @@ import {Ball} from './Ball.mjs';
 import {Bumper} from './Bumper.mjs';
 import { Line } from './line.mjs';
 import { Polygon } from './Polygon.mjs';
-import { RightFlipper } from './flipper.mjs';
+import { RightFlipper, LeftFlipper} from './flipper.mjs';
 
 export class Table{
     constructor(parent, width, height){
@@ -46,31 +46,30 @@ export class Table{
         // Set up Ball & Ball Collision Detection & Reflection
         const ball = new Ball(this.elem, new Victor(100,100), 20.0);
         ball.getCollisionShape().addCollisionListener((shape, collisionPoint, normal) => {
-            
-            if(shape.name != 'supaLine'){
                 ball.reflect(collisionPoint, normal, shape.bounciness);
-                //ball.applyForce(normal.multiplyScalar(6.7))
-            }    
-            
         });
         this._collisionDetection.addDynamicObject(ball);
 
 
-        new RightFlipper(this.elem, new Victor(150,450), 100);
-
-
-        const movingLine =  new Line(this.elem, new Victor(100, 500), new Victor(500, 600), 4);
-        movingLine.setName('supaLine');
-        const shape = movingLine.getCollisionShape();
-        shape.addCollisionListener((object, collisionPoint, normal) => {
-
-            //console.log("applying force");
-            
-            ball.applyForce(normal.multiplyScalar(50))
-            
+        const rightFlipper = new RightFlipper(this.elem, new Victor(140,550), 100);
+        rightFlipper.getCollisionShape().addCollisionListener((object, collisionPoint, normal) => {
+        
+            if(rightFlipper.isKicking){
+                ball.applyForce(normal.multiplyScalar(20))
+                console.log("Kicked Ball");
+            }
         });
-        this._collisionDetection.addKinematicObject(movingLine);
+        this._collisionDetection.addKinematicObject(rightFlipper);
 
+        const leftFlipper = new LeftFlipper(this.elem, new Victor(40,550), 100);
+        leftFlipper.getCollisionShape().addCollisionListener((object, collisionPoint, normal) => {
+        
+            if(leftFlipper.isKicking){
+                ball.applyForce(normal.multiplyScalar(20))
+                console.log("Kicked Ball");
+            }
+        });
+        this._collisionDetection.addKinematicObject(leftFlipper);
 
         // Create Static Elements
         const staticObjects = [
@@ -78,6 +77,7 @@ export class Table{
             new Line(this.elem, new Victor(200, 400), new Victor(400, 300), 4),
             new Line(this.elem, new Victor(150, 400), new Victor(50, 300), 4),
             new Polygon(this.elem, new Victor(200, 175), new Victor(300, 175), new Victor(300, 275), new Victor(200, 275)),
+            new Line(this.elem, new Victor(100, 700), new Victor(500, 800), 4)
         ];
 
         staticObjects.forEach(obj => this._collisionDetection.addStaticObject(obj));
