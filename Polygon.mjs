@@ -1,22 +1,52 @@
-
-import { ComplexCollisionShape } from './CollisionDetection.mjs';
-import { Line } from './line.mjs';
+import { Path } from './Path.mjs';
 
 export class Polygon{
-    constructor(parent, ...points){
-        this._lines = [];
-        let lastPoint = points[points.length-1];
-        for(let point of points){
-            this._lines.push(new Line(parent, lastPoint, point, 4));
-            lastPoint = point;
-            
-        }
-        
-        const collisionShapes = this._lines.map(line => line.getCollisionShape());
-        this._collisionShape = new ComplexCollisionShape("Polygon", collisionShapes);
-    }
+    
 
+    // segments 8 = 8-Eck
+    // n = wiviele davon zeichnen
+
+    constructor(parent, pos, radius, edges, drawnEdges, edgesOffset){
+
+        const points = [];
+
+        const incAlpha = (2 * Math.PI) / edges;
+        let alpha = edgesOffset * incAlpha;
+
+        for(let i  = 0; i <= drawnEdges; i++){
+            const x = Math.cos(alpha) * radius + pos.x;
+            const y = -Math.sin(alpha) * radius + pos.y;
+            points.push(new Victor(x,y));
+
+            alpha += incAlpha;
+        }
+
+        this._path = new Path(parent, false, ...points)
+
+
+    
+
+        // function drawPolygon(segments, radius, pos){
+  
+        //     const increment = TWO_PI/segments;
+            
+        //     for(let a = 0; a < TWO_PI; a += increment){
+              
+        //       const x = cos(a) * radius + pos.x;
+        //       const y = sin(a) * radius + pos.y;
+        //       const nextX = cos(a + increment) * radius + pos.x;
+        //       const nextY = sin(a + increment) * radius + pos.y;
+              
+        //       line(x,y,nextX,nextY);
+        //     }
+        //   }
+
+        // // in loop
+        
+    }
+    
+    
     getCollisionShape(){
-        return this._collisionShape;
+        return this._path.getCollisionShape();
     }
 }
