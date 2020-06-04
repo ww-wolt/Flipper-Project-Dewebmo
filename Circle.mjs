@@ -1,10 +1,11 @@
 import {CollisionCircle} from './CollisionDetection.mjs';
 
 export class Circle{
-    constructor(parent, pos, radius){
+    constructor(parent, pos, radius, cssClass){
         this._pos = pos; // Position of the center of the circle
         this._radius = radius;
-        this._collisionShape = new CollisionCircle("Circle", this._radius, this._pos);
+        this._collisionShape = new CollisionCircle(this, this._radius, this._pos);
+        this.bounciness = 1.0;
 
         // Create DOM-Element
         this.elem = document.createElement('DIV');
@@ -16,6 +17,8 @@ export class Circle{
         this.elem.style.backgroundColor = 'greenyellow';
         this.elem.style.borderRadius = '50%';
         this.elem.style.transform = 'translate('+this._pos.x+'px,'+this._pos.y+'px)';
+
+        this.elem.classList.add(cssClass);
 
         // Append DOM-Element
         parent.appendChild(this.elem);
@@ -29,6 +32,10 @@ export class Circle{
 
     getCollisionShape(){
         return this._collisionShape;
+    }
+
+    handleBallCollision(ball, collisionPoint, normal){
+        ball.reflect(collisionPoint, normal, this.bounciness);
     }
 
 }
