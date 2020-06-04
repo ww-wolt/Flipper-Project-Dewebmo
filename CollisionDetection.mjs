@@ -119,8 +119,8 @@ export class CollisionDetection{
             const vec = normal.clone().multiplyScalar(staticShape.radius + dynamicShape.radius);
             const collisionPointDynamicShape = staticShape.pos.clone().add(vec);
             
-            dynamicShape.hasCollided(staticShape, collisionPointDynamicShape, normal);
-            staticShape.hasCollided(dynamicShape, collisionPointStaticShape, normal);
+            dynamicShape.hasCollided(staticShape.object, collisionPointDynamicShape, normal);
+            staticShape.hasCollided(dynamicShape.object, collisionPointStaticShape, normal);
         }
     }
 
@@ -155,19 +155,18 @@ export class CollisionDetection{
             const collisionPointDynamicShape = nearestPoint.clone().add(vec);
 
             // Notify Listeners
-            dynamicShape.hasCollided(staticShape, collisionPointDynamicShape, normal);
-            staticShape.hasCollided(dynamicShape, collisionPointStaticShape, normal);
+            dynamicShape.hasCollided(staticShape.object, collisionPointDynamicShape, normal);
+            staticShape.hasCollided(dynamicShape.object, collisionPointStaticShape, normal);    
         }
     }
 }
 
 export class CollisionShape{
 
-    constructor(name){
-        this.name = name;
+    constructor(object){
+        this.object = object;
         this._collisionListeners = [];
         this._moveListeners = [];
-        this.bounciness = 1;
     }
 
     addMoveListener(callback){
@@ -197,8 +196,8 @@ export class CollisionShape{
 
 export class CollisionCircle extends CollisionShape{
     
-    constructor(name, radius, pos){
-        super(name);
+    constructor(object, radius, pos){
+        super(object);
         this.radius = radius;
         this.pos = pos;
     }
@@ -214,8 +213,8 @@ export class CollisionCircle extends CollisionShape{
 
 export class CollisionLine extends CollisionShape{
     
-    constructor(name, a, b){
-        super(name);
+    constructor(object, a, b){
+        super(object);
         this.a = a;
         this.b = b;
     }
@@ -233,23 +232,31 @@ export class CollisionLine extends CollisionShape{
     }
 }
 
-
 export class ComplexCollisionShape extends CollisionShape{
     
-    constructor(name, collisionShapes){
-        super(name);
+    constructor(object, collisionShapes){
+        super(object);
         this.collisionShapes = collisionShapes;
+
+        this.updateBoundingBox();
     }
 
     getBoundingBox(){
-        
+        return this._boundingBox;
+    }
+
+    hasMoved(){
+        super.hasMoved();
+        this.updateBoundingBox();
+    }
+
+    updateBoundingBox(){
         const boundingBoxes = this.collisionShapes.map(shape => shape.getBoundingBox());
         const minX = Math.min(...boundingBoxes.map(bb => bb.minX));
         const maxX = Math.max(...boundingBoxes.map(bb => bb.maxX));
         const minY = Math.min(...boundingBoxes.map(bb => bb.minY));
         const maxY = Math.max(...boundingBoxes.map(bb => bb.maxY));
-
-        return new BoundingBox(minX, maxX, minY, maxY);
+        this._boundingBox = new BoundingBox(minX, maxX, minY, maxY);
     }
 }
 
