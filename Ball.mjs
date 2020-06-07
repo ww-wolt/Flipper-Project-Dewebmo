@@ -5,10 +5,12 @@ import { Circle } from './Circle.mjs';
 export class Ball{
     constructor(parent, pos, radius){
         this._circle = new Circle(parent, pos, radius, 'ball');
+        //this._light = new Circle(parent, pos, radius * 3, 'ball-light')
+
 
         this._newPos = pos; 
         this.velocity = new Victor(0,0);
-        this._gravitiy = new Victor(0,0.35);
+        this._gravitiy = new Victor(0, 0.12);
         this.gravityOn = true;
 
         this._ms = 10;
@@ -17,12 +19,17 @@ export class Ball{
         this._velocityArrow = new Arrow(parent, 10);
         this._velocityArrow.setEnabled(false);
 
+        this._isVisible = true;
+
         // Initialize Animation
         this._animation = this._circle.elem.animate({},{duration: this._ms});
         this._keyframes = [];
 
+
+        
         // Animation Loop
-        this._animation.onfinish = this.updatePhysics.bind(this);
+        window.setInterval(this.updatePhysics.bind(this), this._ms)
+        //this._animation.onfinish = this.updatePhysics.bind(this);
     }
 
     reflect(collisionPoint, normal, bounce){
@@ -50,6 +57,8 @@ export class Ball{
 
     updatePhysics(){
 
+        if(!this._isVisible) return;
+
         // calculate new position
 
         if(this.gravityOn) this.velocity = this.velocity.add(this._gravitiy);
@@ -65,8 +74,7 @@ export class Ball{
         this.animate();
 
         // After Animation set pos to new
-        this._circle._pos = this._newPos;
-    
+        this._circle._pos = this._newPos;        
     }
 
     animate(){
@@ -87,14 +95,18 @@ export class Ball{
 
     setPos(newPos){
         this._newPos = newPos;
-        //this._circle._pos = newPos;
+        this._circle._pos = newPos;
     }
 
     setVisible(visible){
         if(visible) {
             this._circle.elem.style.display = 'block'
+            this._isVisible = true;
+            this.updatePhysics();
+
         }else{
             this._circle.elem.style.display = 'none'
+            this._isVisible = false;
         }
     }
     
