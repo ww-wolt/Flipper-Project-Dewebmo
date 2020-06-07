@@ -9,6 +9,7 @@ import { HorizontalCurve } from './Curve.mjs';
 import { Polygon } from './Polygon.mjs';
 import { Circle } from './Circle.mjs';
 import { BlackHole } from './BlackHole.mjs';
+import { Rocket } from './Rocket.mjs';
 
 export class Table{
     constructor(parent, width, height){
@@ -29,26 +30,25 @@ export class Table{
         // Append DOM-Element
         parent.appendChild(this.elem);
 
-        this._walllsPath = new Path(this.elem, true, new Victor(0,0), new Victor(width, 0), new Victor(width, height), new Victor(0, height))
-
-
-        // // Add table lines to Collision Detection
-        // const lines = [
-        //     new CollisionLine(this, new Victor(0,0),  new Victor(width, 0)), 
-        //     new CollisionLine(this, new Victor(width, 0),  new Victor(width, height)),
-        //     new CollisionLine(this, new Victor(width, height),  new Victor(0, height)),
-        //     new CollisionLine(this, new Victor(0, height),  new Victor(0, 0)) ];
-        
-        //     for(let line of lines){
-        //     this._collisionDetection.addStaticShape(line);
-        // }
+        //this._walllsPath = new Path(this.elem, true, new Victor(100,4), new Victor(width-100, 4), new Victor(width-100, height-300), new Victor(100, height-300))
 
         
         this.setUpPlayground();
+
+        this.startMusic();
     }
 
     getCollisionShape(){
         return this._walllsPath.getCollisionShape();
+    }
+
+    startMusic(){
+        new Howl({
+            src: ['/Sounds/race-car.mp3'],
+            autoplay: true,
+            loop: true,
+            volume: 0.5,
+        });
     }
 
 
@@ -56,28 +56,24 @@ export class Table{
     setUpPlayground(){
 
         // Set up Ball & Ball Collision Detection & Reflection
-        const ball = new Ball(this.elem, new Victor(100,100), 25.0);
+        const ball = new Ball(this.elem, new Victor(200,300), 25.0);
         ball.getCollisionShape().addCollisionListener((object, collisionPoint, normal) => {
             object.handleBallCollision(ball, collisionPoint, normal);
         });
         this._collisionDetection.addDynamicObject(ball);
 
 
-        //setInterval()
-
+        
+        // Autoscroll
         ball.getCollisionShape().addMoveListener(() =>{
-
             window.scroll({
-                top: ball.getPos().y - (window.innerHeight/3),
-                left: 0,
+                top: Math.min(ball.getPos().y-250, 1700-window.innerHeight),
                 behavior: 'smooth'
             });
-
-            console.log('Table -> setUpPlayground -> window.innnerHeight', window.innnerHeight)
         })
 
 
-        const leftFlipper = new LeftFlipper(this.elem, new Victor(365,1300));
+        const leftFlipper = new LeftFlipper(this.elem, new Victor(465,1300));
         leftFlipper.getCollisionShape().addCollisionListener((object, collisionPoint, normal) => {
         
             if(leftFlipper.isKicking){
@@ -87,7 +83,7 @@ export class Table{
         });
         this._collisionDetection.addStaticObject(leftFlipper);
 
-        const rightFlipper = new RightFlipper(this.elem, new Victor(535,1300));
+        const rightFlipper = new RightFlipper(this.elem, new Victor(635,1300));
         rightFlipper.getCollisionShape().addCollisionListener((object, collisionPoint, normal) => {
         
             if(rightFlipper.isKicking){
@@ -97,7 +93,16 @@ export class Table{
         });
         this._collisionDetection.addStaticObject(rightFlipper);
 
+
+        const rocket = new Rocket(this.elem, new Victor(1040, 1550))
+
         const blackHole = new BlackHole(this.elem, new Victor(500,1450), 100)
+        blackHole.listener = function() {
+            rocket.prepare(ball);
+        };
+
+
+        
 
 
 
@@ -110,23 +115,41 @@ export class Table{
 
         //constructor(parent, pos, radius, edges, drawnEdges, edgesOffset)
 
-        
+         // Create Static Elements
+         const staticObjects = [
+            new Line(this.elem, new Victor(100, this._height-300), new Victor(100, 430)),
+            new Line(this.elem, new Victor(1100, this._height-300), new Victor(1100, 430)),
+            new Polygon(this.elem, new Victor(330, 430), 230, 60, 23, 7),
+            new Polygon(this.elem, new Victor(870, 430), 230, 60, 23, 0),
+            new Line(this.elem, new Victor(501, 276), new Victor(600, 375)),
+            new Line(this.elem, new Victor(699, 276), new Victor(600, 375)),
 
-
-
-        // Create Static Elements
-        const staticObjects = [
             new Bumper(this.elem, new Victor(90,300), 40.0),
-            new Line(this.elem, new Victor(200, 400), new Victor(400, 300), 4),
-            new Line(this.elem, new Victor(100, 400), new Victor(50, 300), 4),
+            //new Line(this.elem, new Victor(200, 400), new Victor(400, 300), 4),
+            //new Line(this.elem, new Victor(100, 400), new Victor(50, 300), 4),
             //new Path(this.elem, true, new Victor(200, 175), new Victor(300, 175), new Victor(300, 275), new Victor(200, 275)),
-            new Line(this.elem, new Victor(100, 700), new Victor(500, 800), 4),
-            new Polygon(this.elem, new Victor(500, 500), 200, 100, 50, 0),
-            new Line(this.elem, new Victor(0, 1000), new Victor(380, 1335), 4), // Flipperguidingline
-            new Line(this.elem, new Victor(610, 1340), new Victor(1000, 1000), 4), // Flipperguidingline
+            new Line(this.elem, new Victor(200, 700), new Victor(500, 800), 4),
+            new Line(this.elem, new Victor(0, 1000), new Victor(380, 1300), 4), // Flipperguidingline
+            new Line(this.elem, new Victor(610, 1300), new Victor(850, 1000), 4), // Flipperguidingline
             blackHole,
             this
         ];
+
+
+
+        // // Create Static Elements
+        // const staticObjects = [
+        //     new Bumper(this.elem, new Victor(90,300), 40.0),
+        //     //new Line(this.elem, new Victor(200, 400), new Victor(400, 300), 4),
+        //     //new Line(this.elem, new Victor(100, 400), new Victor(50, 300), 4),
+        //     //new Path(this.elem, true, new Victor(200, 175), new Victor(300, 175), new Victor(300, 275), new Victor(200, 275)),
+        //     new Line(this.elem, new Victor(200, 700), new Victor(500, 800), 4),
+        //     new Polygon(this.elem, new Victor(800, 200), 200, 60, 23, 0),
+        //     new Line(this.elem, new Victor(0, 1000), new Victor(380, 1300), 4), // Flipperguidingline
+        //     new Line(this.elem, new Victor(610, 1300), new Victor(850, 1000), 4), // Flipperguidingline
+        //     blackHole,
+        //     this
+        // ];
 
         staticObjects.forEach(obj => this._collisionDetection.addStaticObject(obj));
 

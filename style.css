@@ -4,20 +4,139 @@ html{
 }
 
 body{
-    background-image: url(./Assets/forest2.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
+    margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+
+    
+    /*Hide vertical scrollbar */
+    /* overflow-y: hidden;  */
+
+    /* Hide horizontal scrollbar */
+    overflow-x: hidden; 
+    isolation: auto;
 }
 
 .table{
-    background-color: rgba(85, 85, 85, 0.4);
+    /* background-color: rgba(85, 85, 85, 0.4); */
     margin: 0 auto;
+    z-index: -100;
+
+    position: absolute;
+    top: -100px;
+    right: calc((100% - 1200px) / 2);
+    left: calc((100% - 1200px) / 2);
+
+    overflow: hidden;
+}
+
+button {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+}
+
+.ball{
+    background-image: url(./Assets/space1/moon.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 200;
+}
+
+.ball::after{
+
+    content: '';
+    display: block;
+    /* background: rgba(245, 227, 199, 0.82); */
+
+    background-image: url(./Assets/light.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+    /* filter: blur(250px); much to slow*/ 
+
+    width: 400px;
+    height: 400px;
+    z-index: 300;
+
     position: relative;
-    border: 1px solid black;
+    top: -175px;
+    left:  -175px;
+    /* transform-origin: 50% 50%; */
+}
+
+.rocket{
+    background-image: url(Assets/space1/rocket-ship-2.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.flame{
+    background-image: url(./Assets/flame.gif);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    mix-blend-mode: screen;
+    z-index: 2;
+
+    display: none;
+}
+
+/* .rocket::after{
+    content: '';
+    display: block;
+    width: 50px;
+    height: 100px;
+    z-index: 302;
+
+    background-image: url(./Assets/flame.gif);
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    position: relative;
+    top: 70px;
+    left:  27px;
+
+    mix-blend-mode: screen;
+    background-blend-mode: lighten;
+} */
+
+.background{
+    width: 100%;
+    height: 1700px;
+    z-index: -1000;
+    object-fit: cover;
+}
+
+
+.black-hole{
+    z-index: -100;
+
+    /* transform: scale(10) !important; */
+
+    /* animation-name:  black-hole-grow;
+    animation-duration: 1.0s;
+    animation-iteration-count: 1; */
+}
+
+@keyframes black-hole-grow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(2);
+    }
 }
 
 .bumper{
+    background-image: url(./Assets/space1/mars.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bumper-old{
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -45,9 +164,53 @@ body{
 
 .flipper-right{
     transform-origin: 82% 50%;
-    transform: rotateZ(-32deg);
+    z-index: -1;
 }
 
+.flipper-left{
+    transform-origin: 18% 50%;
+    z-index: -1;
+}
+
+.neon-glow {
+    box-shadow:
+    0 0 0.1vw  0.4vw #fff7f7,   
+    0 0 0.4vw  0.6vw #e97272, 
+    0 0   4vw  0.4vw #e50b0b,
+  
+    inset 0 0 1.5vw  0.4vw #e50b0b,
+    inset 0 0 0.4vw  0.2vw #e97272,
+    inset 0 0 0.5vw  0.2vw #fff7f7;
+}
+
+.neon-text {
+    text-shadow: 
+    .1vw 0vw .25vw #ffd8d8, .2vw 0vw .25vw #ffd8d8, .4vw 0vw .25vw #ffd8d8, 
+  
+    .1vw 0vw   0vw #f25757, .2vw 0vw   0vw #f25757, .4vw 0vw   0vw #f25757,
+    .1vw 0vw  .1vw #f25757, .2vw 0vw  .1vw #f25757, .4vw 0vw  .1vw #f25757,
+    .1vw 0vw   2vw #f25757, .2vw 0vw   2vw #f25757, .4vw 0vw   2vw #f25757, 
+  
+    .1vw 0vw   1vw #e50b0b, .2vw 0vw   1vw #e50b0b, .4vw 0vw   5vw #e50b0b, 
+    .1vw 0vw   5vw #e50b0b, .2vw 0vw  20vw #e50b0b, .4vw 0vw  10vw #e50b0b,
+    .1vw 0vw  10vw #e50b0b, .2vw 0vw  30vw #e50b0b, .4vw 0vw  10vw #e50b0b;
+}
+
+.blur{
+    filter: blur(8px);
+}
+
+.line{
+   
+    height: 0px;
+    box-shadow: 0 0 1px 1px #2EFFF2; 
+    border: 1px solid #2EFFF2;
+    border-radius: 1px;
+    filter: blur(1px);
+}
+
+
+/* 
 .flipper-left{
     width: 100px;
     height: auto;
@@ -56,4 +219,7 @@ body{
     left: 200px;
     transform-origin: 18% 50%;
     transform: rotateZ(32deg);
-}
+} */
+
+
+    
