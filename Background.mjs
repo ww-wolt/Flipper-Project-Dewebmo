@@ -4,7 +4,7 @@ export class Background{
 
          // Create DOM-Element
         this.img = document.createElement('IMG');
-        this.img.src = 'Assets/background.jpg';
+        this.img.src = 'Assets/background.png';
         this.img.classList.add('background');
 
         // Append DOM-Element
@@ -12,8 +12,8 @@ export class Background{
 
         new simpleParallax(this.img, {
             delay: 0.0,
-            scale: 1.4,
-            transition: 'linear'
+            scale: 1.3,
+            transition: 'linear',
         });
     }
 }
