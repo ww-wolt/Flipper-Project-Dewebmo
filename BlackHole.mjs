@@ -17,25 +17,24 @@ export class BlackHole{
         this.img.style.width = radius + 'px';
         this.img.style.height = 'auto';
         this.img.style.position = 'absolute';
-        this.img.style.transformOrigin = '50% 50%'
         this.img.style.transform = 'translate('+ (pos.x - 0.5 * radius) + 'px,'+ (pos.y - 0.5 * radius) +'px)' + 'rotateZ(45deg)';
         this.img.classList.add('black-hole');
 
-        this._animation = this.img.animate([   
-            {transform: 'translate('+ (pos.x - 0.5 * radius) + 'px,'+ (pos.y - 0.5 * radius) +'px)' + 'scale(2) rotateZ(45deg)'},
-            {transform: 'translate('+ (pos.x - 0.5 * radius) + 'px,'+ (pos.y - 0.5 * radius) +'px)' + 'rotateZ(45deg)'},
-        ], 
-        {duration: 3000,  fill: 'both'}); 
-        this._animation.pause();
-        this._animation.currentTime = 3000;
         this._animationPlaying = false;
 
         // Append DOM-Element
         parent.appendChild(this.img);
 
-        this._collisionShape = new CollisionCircle(this, radius*0.4, pos);
+        this._collisionShape = new ComplexCollisionShape(this, [
+            new CollisionCircle(this, radius*0.6, pos), 
+            new CollisionLine(this, new Victor(0,pos.y - radius*0.3), new Victor(1000,pos.y - radius*0.3))
+        ])
+
+        this.listener = null;
+
+        //new CollisionCircle(this, radius*0.4, pos);
         //new Line(parent, new Victor(0,pos.y-radius*0.2), new Victor(1000,pos.y-radius*0.2), 4);
-        new ComplexCollisionShape(this, [new CollisionCircle(this, radius*0.6, pos), new CollisionLine(this, new Victor(0,pos.y - radius*0.3), new Victor(1000,pos.y - radius*0.3))])
+        
     }
 
     getCollisionShape(){
@@ -45,14 +44,25 @@ export class BlackHole{
     handleBallCollision(ball, collisionPoint, normal){
 
         if(!this._animationPlaying){
-            this._animation.reverse();
+
             this._animationPlaying = true;
-            const audio = new Audio('Sounds/black-hole.wav');
-            audio.play();
+
+            const animationScaleUp = this.img.animate([
+                {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'rotateZ(45deg)'},
+                {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'scale(2) rotateZ(45deg)'}
+            ], 
+            {duration: 1000,  fill: 'both'}); 
+
+            new Howl({
+                src: ['Sounds/black-hole.wav'],
+                autoplay: true,
+                volume: 0.2,
+            });
+
+            animationScaleUp.onfinish = function() {
+                this._animationPlaying = false;
+            }.bind(this)
         }
-        this._animation.onfinish = function() {
-            this._animationPlaying = false;
-        }.bind(this)
         
         ball.gravityOn = false;
         const dirVec = this._pos.clone().subtract(ball.getPos());
@@ -62,21 +72,31 @@ export class BlackHole{
         
         
         if (dirVec.length() < (0.01 * this._radius)){
-            console.log('BlackHole -> handleBallCollision -> dirVec.length()', dirVec.length())
+        
+            new Howl({
+                src: ['Sounds/explosion.wav'],
+                autoplay: true,
+                volume: 2.0,
+            });
+
+        
+            this.img.animate([   
+                {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'scale(2) rotateZ(45deg)'},
+                {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'rotateZ(45deg)'},
+            ], 
+            {duration: 400,  fill: 'both'}); 
+
+            
             ball.setVisible(false)
-
-            // supress Collision
-            ball.setPos(new Victor(500, 200))
-            ball.velocity = new Victor(0,0)
-
-            this._animation.reverse();
-
-            window.setTimeout(startRocket, 2000)
+            window.setTimeout(this.notifyRocket.bind(this), 1000, ball)
         }
+        
+    }
 
-        function startRocket(){
-            ball.setVisible(true)
-            ball.gravityOn = true;
+    // Listener (Rocket) benachrichtigen
+    notifyRocket(ball){  
+        if(this.listener){
+            this.listener();
         }
     }
 
