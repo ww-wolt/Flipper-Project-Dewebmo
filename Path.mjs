@@ -8,7 +8,7 @@ export class Path{
         if (join) points.push(points[0]);
 
         for(let i = 0; i < points.length -1; i++){
-            this._lines.push(new Line(parent, points[i], points[i+1], 4));
+            this._lines.push(new Line(parent, points[i], points[i+1]));
         }
         
         const collisionShapes = this._lines.map(line => line.getCollisionShape());

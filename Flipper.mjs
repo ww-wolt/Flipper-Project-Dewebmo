@@ -19,7 +19,7 @@ export class Flipper{
         this.isKicking = false;
         this._currentTime = 0;
 
-        this._line = new Line(parent, pos, pos, 4);
+        this._line = new Line(parent, pos, pos);
         this.updateLine();
 
         this._collisionShape = this._line.getCollisionShape();
@@ -135,7 +135,7 @@ export class Flipper{
 }
 
 export class RightFlipper extends Flipper{
-    constructor(parent, pos, width){
+    constructor(parent, pos){
         super(parent, 'Assets/flipper-right.png', 'flipper-right', pos, -32, 'ArrowRight')
     }
 
@@ -160,7 +160,7 @@ export class RightFlipper extends Flipper{
         const b =  a.clone().add(new Victor(this._width-18, 0));
 
         const aOffset = new Victor(0, -7).rotateDeg(this.angle);
-        const bOffset = new Victor(9, -18).rotateDeg(this.angle);
+        const bOffset = new Victor(4, -18).rotateDeg(this.angle);
 
         const vec = b.clone().subtract(a);
         vec.rotateDeg(this.angle)
@@ -173,7 +173,7 @@ export class RightFlipper extends Flipper{
 }
 
 export class LeftFlipper extends Flipper{
-    constructor(parent, pos, width){
+    constructor(parent, pos){
         super(parent, 'Assets/flipper-left.png', 'flipper-left', pos, 32, 'ArrowLeft')
     }
 
@@ -196,7 +196,7 @@ export class LeftFlipper extends Flipper{
         const a =  this._pos.clone().add(new Victor(18, 18));
         const b =  a.clone().add(new Victor(this._width-18, 0));
 
-        const aOffset = new Victor(-9, -18).rotateDeg(this.angle);
+        const aOffset = new Victor(-4, -18).rotateDeg(this.angle);
         const bOffset = new Victor(0, -7).rotateDeg(this.angle);
 
         const vec = a.clone().subtract(b);

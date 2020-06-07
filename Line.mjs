@@ -1,7 +1,7 @@
 import { CollisionLine } from "./CollisionDetection.mjs";
 
 export class Line{
-    constructor(parent, a, b, stroke, cssClass){
+    constructor(parent, a, b, cssClass){
 
         this._collisionShape = new CollisionLine(this, a, b)
         this.bounciness = 1.0;
@@ -9,10 +9,8 @@ export class Line{
         // Create DOM-Element
         this.line = document.createElement('DIV');
         this.line.style.position = 'absolute';
-        this.line.style.height = stroke+'px';
-        this.line.style.borderRadius = stroke / 2 +'px';
         this.setCoordinates(a,b);
-        this.line.style.background = 'linear-gradient(90deg, rgba(255,24,0,1) 0%, rgba(77,69,252,0.7) 100%)';
+        this.line.classList.add('line');
         this.line.classList.add(cssClass);
         this.line.style.transformOrigin = '0% 50%'
     
@@ -30,7 +28,7 @@ export class Line{
         const angle = vec.horizontalAngleDeg()
         
         this.line.style.transform = 'translate('+this.a.x + 'px,'+this.a.y +'px)' + ' rotate('+angle+'deg)';
-        this.line.style.width = vec.length() + 'px';
+        this.line.style.width = vec.length()-2 + 'px';
 
         this._collisionShape.a = this.a;
         this._collisionShape.b = this.b;
