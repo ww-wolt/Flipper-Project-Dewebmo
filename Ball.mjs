@@ -16,14 +16,18 @@ export class Ball{
         this._ms = 8;
         this._bounciness = 0.7;
 
-        this._velocityArrow = new Arrow(parent, 10);
-        this._velocityArrow.setEnabled(false);
+        // this._velocityArrow = new Arrow(parent, 10);
+        // this._velocityArrow.setEnabled(false);
 
         this._isVisible = true;
 
         // Initialize Animation
         this._animation = this._circle.elem.animate({},{duration: this._ms});
         this._keyframes = [];
+
+
+        // this._totalTime = 0;
+        // this._counter = 0;
 
 
         
@@ -66,10 +70,19 @@ export class Ball{
         this._newPos = this._circle._pos.clone().add(this.velocity);
         this._circle._collisionShape.pos = this._newPos;
 
-        // notify Collision Detection
-        this._circle._collisionShape.hasMoved();
 
-        this._velocityArrow.setVector(this._circle._pos, this.velocity);
+        // notify Collision Detection
+
+        // const before = new Date().getTime()
+        this._circle._collisionShape.hasMoved();
+        // this._totalTime += new Date().getTime() - before;
+        // this._counter++;
+        // console.log('Durchschnitt '+this._totalTime/this._counter + ' ms');
+        
+
+        
+
+        //this._velocityArrow.setVector(this._circle._pos, this.velocity);
 
         this.animate();
 
@@ -79,8 +92,8 @@ export class Ball{
 
     animate(){
         this._keyframes = [
-            {transform: `translate(${this._circle._pos.x}px, ${this._circle._pos.y}px)`},
-            {transform: `translate(${this._newPos.x}px, ${this._newPos.y}px)`}];
+            {transform: `translate3d(${this._circle._pos.x}px, ${this._circle._pos.y}px, 0)`},
+            {transform: `translate3d(${this._newPos.x}px, ${this._newPos.y}px, 0)`}];
         this._animation.effect.setKeyframes(this._keyframes);
         this._animation.play();
     }

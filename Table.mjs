@@ -1,4 +1,5 @@
 
+
 import {CollisionDetection, CollisionLine} from './CollisionDetection.mjs';
 import {Ball} from './Ball.mjs';
 import {Bumper} from './Bumper.mjs';
@@ -67,7 +68,7 @@ export class Table{
         if(this._lives > 0){
             setTimeout(this.openDoor.bind(this), 1000)
             this._rocket.prepare(this._ball);
-            window.setTimeout(this.closeDoor.bind(this), 5000)
+            window.setTimeout(this.closeDoor.bind(this), 5300)
             this._lives--;
         }else{
             this.gameOver();
@@ -87,6 +88,7 @@ export class Table{
             window.alert('Game Over! \n\nDein Score: ' + this._score.score + ' Punkte')
             this._score.resetScore();
             this._lives = 3;
+            this.askName();
             this.startGame();
             this.startMusic();
         }, 1500)
@@ -131,13 +133,24 @@ export class Table{
         this._collisionDetection.addDynamicObject(this._ball);
 
 
+        
         // Autoscroll
-        this._ball.getCollisionShape().addMoveListener(() =>{
+        const updateScroll = () =>{
             window.scroll({
-                top: Math.min(this._ball.getPos().y-350, 1700-window.innerHeight),
+                top: '' + Math.min(this._ball.getPos().y-350, 1700-window.innerHeight),
                 behavior: 'smooth'
             });
-        })
+            window.requestAnimationFrame(updateScroll)
+        }
+        window.requestAnimationFrame(updateScroll)
+
+        
+        // this._ball.getCollisionShape().addMoveListener(() =>{
+        //     window.scroll({
+        //         top: '' + Math.min(this._ball.getPos().y-350, 1700-window.innerHeight),
+        //         behavior: 'smooth'
+        //     });
+        // })
 
 
         const leftFlipper = new LeftFlipper(this.elem, new Victor(565,1500));
@@ -249,7 +262,7 @@ export class Table{
 
         function add(){
             sheet = document.createElement('style')
-            sheet.innerHTML = '.line{box-shadow: 0 0 1px 1px #FF45B5; border: 1px solid #FF45B5;}';
+            sheet.innerHTML = '.line{box-shadow: 0 0 4px 2px #FF45B5}';
             document.body.appendChild(sheet);
         }
 

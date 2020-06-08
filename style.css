@@ -1,6 +1,13 @@
 
+@font-face {
+    font-family: 'Beon';
+    src: url("Assets/Beon.otf");
+}
+
+
 html{
     font-family: sans-serif;
+    scroll-behavior: smooth;
 }
 
 body{
@@ -21,7 +28,7 @@ body{
 .table{
     /* background-color: rgba(85, 85, 85, 0.4); */
     margin: 0 auto;
-    z-index: -100;
+    z-index: 0;
 
     position: absolute;
     top: -100px;
@@ -104,15 +111,20 @@ button {
 } */
 
 .background{
+    /* position: fixed; */
     width: 100%;
     height: 1700px;
     z-index: -1000;
     object-fit: cover;
 }
 
+.simpleParallax{
+    z-index: -1000;
+}
+
 
 .black-hole{
-    z-index: -100;
+    z-index: 0;
 }
 
 .highscore-list{
@@ -125,9 +137,6 @@ button {
     font-family: 'Beon';
     font-size: 22px;
     color: white;
-
-    /* background-color: #2EFFF2; */
-
     
     filter: blur(0.2px);
 
@@ -221,10 +230,13 @@ button {
 
 .line{
     height: 0px;
-    box-shadow: 0 0 1px 1px #2EFFF2; 
+    box-shadow: 0 0 4px 2px #2EFFF2; 
+
+    /* Too bad performance... */
+    /* box-shadow: 0 0 1px 1px #2EFFF2;
     border: 1px solid #2EFFF2;
     border-radius: 1px;
-    filter: blur(1px);
+    filter: blur(1px); */
 }
 
 .invisible{

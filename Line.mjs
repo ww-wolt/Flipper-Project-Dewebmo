@@ -1,3 +1,4 @@
+
 import { CollisionLine } from "./CollisionDetection.mjs";
 
 export class Line{
@@ -23,17 +24,22 @@ export class Line{
     setCoordinates(a, b){
 
         this.a = a
+        console.log('Line -> setCoordinates -> this.a = a', this.a = a)
         this.b = b
        
 
         // Transformation
         const vec = b.clone().subtract(a)
         const angle = vec.horizontalAngleDeg()
-        
-        this.line.style.transform = 'translate('+this.a.x + 'px,'+this.a.y +'px)' + ' rotate('+angle+'deg)';
-        this.line.style.width = vec.length()-2 + 'px';
 
+        // Effektiv gezeichnete Linie um 1.5 rechts/links verkürzen -> führt zu schöneren Linienecken
+        const offsetLineVec = vec.clone().normalize().multiplyScalar(1.5)
+        const newLineA = this.a.clone().add(offsetLineVec);
+        console.log('Line -> setCoordinates -> newLineA', newLineA)
+        this.line.style.transform = 'translate('+newLineA.x + 'px,'+newLineA.y +'px)' + ' rotate('+angle+'deg)';
+        this.line.style.width = vec.length()-3 + 'px';
 
+        // Collision Shape Line um 3 rechts/links verkürzen -> weniger Ecken Probleme
         const offsetVec = vec.normalize().multiplyScalar(3)
         const newA = this.a.clone().add(offsetVec);
         const newB = this.b.clone().subtract(offsetVec);
