@@ -26,8 +26,8 @@ export class BlackHole{
         parent.appendChild(this.img);
 
         this._collisionShape = new ComplexCollisionShape(this, [
-            new CollisionCircle(this, radius*0.6, pos), 
-            new CollisionLine(this, new Victor(0,pos.y - radius*0.3), new Victor(1000,pos.y - radius*0.3))
+            new CollisionCircle(this, radius*0.4, pos), 
+            new CollisionLine(this, new Victor(0,pos.y - radius*0.3), new Victor(1400,pos.y - radius*0.3))
         ])
 
         this.listener = null;
@@ -51,13 +51,15 @@ export class BlackHole{
                 {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'rotateZ(45deg)'},
                 {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'scale(2) rotateZ(45deg)'}
             ], 
-            {duration: 1000,  fill: 'both'}); 
+            {duration: 1200,  fill: 'both'}); 
 
             new Howl({
                 src: ['Sounds/black-hole.wav'],
                 autoplay: true,
                 volume: 0.2,
             });
+
+           
 
             animationScaleUp.onfinish = function() {
                 this._animationPlaying = false;
@@ -79,6 +81,12 @@ export class BlackHole{
                 volume: 2.0,
             });
 
+            new Howl({
+                src: ['Sounds/laser.wav'],
+                autoplay: true,
+                volume: 0.1,
+            });
+
         
             this.img.animate([   
                 {transform: 'translate('+ (this._pos.x - 0.5 * this._radius) + 'px,'+ (this._pos.y - 0.5 * this._radius) +'px)' + 'scale(2) rotateZ(45deg)'},
@@ -88,19 +96,14 @@ export class BlackHole{
 
             
             ball.setVisible(false)
-            window.setTimeout(this.notifyRocket.bind(this), 1000, ball)
+
+             // Listener (Rocket) benachrichtigen
+            if(this.listener){
+                this.listener();
+            }
         }
         
     }
-
-    // Listener (Rocket) benachrichtigen
-    notifyRocket(ball){  
-        if(this.listener){
-            this.listener();
-        }
-    }
-
-    
    
 }
 

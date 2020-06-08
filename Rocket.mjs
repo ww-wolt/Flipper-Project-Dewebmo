@@ -6,8 +6,8 @@ export class Rocket{
         this._isReady = false;
         this._width = 120;
 
-        this._flightDistance = 500;
-        this._duration = 200;
+        this._flightDistance = 700;
+        this._duration = 180;
 
 
         // Create DOM-Element
@@ -38,27 +38,29 @@ export class Rocket{
     }
 
     prepare(ball){
+        window.setTimeout(this.startCountdown.bind(this), 1000, ball)
+    }
+
+    startCountdown(ball){
         ball.gravityOn = false;
         ball.velocity = new Victor(0,0);
         ball.setPos(this._pos.clone().add(new Victor(0,-86)));
         ball.setVisible(true);
 
-        window.setTimeout(this.startCountdown.bind(this), 100, ball)
-    }
-
-    startCountdown(ball){
         new Howl({
             src: ['Sounds/countdown.wav'],
             autoplay: true,
-            volume: 0.3,
+            volume: 0.5, 
         });
 
         window.setTimeout(this.launch.bind(this), 3300, ball)
     }
 
     launch(ball){
+
+        const duration = this._duration + Math.random() * this._duration;
         
-        const speed = (this._flightDistance / this._duration) * ball._ms * 1.1;
+        const speed = (this._flightDistance / duration) * ball._ms * 1.1;
         ball.velocity = new Victor(0, -speed)
 
 
@@ -66,7 +68,7 @@ export class Rocket{
             {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)'},
             {transform: 'translate('+this._pos.x + 'px,'+ (this._pos.y - this._flightDistance) + 'px)'},
         ], 
-        {duration: this._duration,  fill: 'both'});
+        {duration: duration,  fill: 'both'});
 
         new Howl({
             src: ['Sounds/rocket-launch.m4a'],
@@ -80,7 +82,7 @@ export class Rocket{
                 {transform: 'translate('+this._pos.x + 'px,'+ (this._pos.y - this._flightDistance) + 'px)'},
                 {transform: 'translate('+this._pos.x + 'px,'+this._pos.y +'px)'},
             ], 
-            {duration: this._duration * 4,  fill: 'both'});
+            {duration: duration * 4,  fill: 'both'});
         }
     }
 

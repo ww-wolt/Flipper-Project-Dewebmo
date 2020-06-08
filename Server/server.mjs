@@ -4,6 +4,8 @@ const app = express();
 
 app.get('/', function (req, res) {
 
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     fs.readFile('highscores.json', 'utf8', (err, data) => {
         
         if (err) {
@@ -25,7 +27,7 @@ app.get('/', function (req, res) {
             // Neuer Score in Array einfügen
             highScores.splice(insertPos,0,{"score":newScore, "name": newName});
             // letzter Score wegschneiden
-            highScores.splice(10,1);
+            highScores.splice(5,1);
             res.json(highScores);
 
             fs.writeFile('highscores.json', JSON.stringify(highScores) , (err) => {

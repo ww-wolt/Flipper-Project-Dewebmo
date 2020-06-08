@@ -6,12 +6,14 @@ export class Polygon{
     // segments 8 = 8-Eck
     // n = wiviele davon zeichnen
 
-    constructor(parent, pos, radius, edges, drawnEdges, edgesOffset){
+    constructor(parent, pos, radius, edges, drawnEdges, edgesOffset, degOffset){
 
         const points = [];
+        const degToRad = (degrees) => degrees * (Math.PI/180);
+       
 
         const incAlpha = (2 * Math.PI) / edges;
-        let alpha = edgesOffset * incAlpha;
+        let alpha = edgesOffset * incAlpha + degToRad(degOffset);
 
         for(let i  = 0; i <= drawnEdges; i++){
             const x = Math.cos(alpha) * radius + pos.x;

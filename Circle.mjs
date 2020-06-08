@@ -14,14 +14,19 @@ export class Circle{
         this.elem.style.top = -this._radius+'px';
         this.elem.style.width = (2*this._radius)+'px';
         this.elem.style.height = (2*this._radius)+'px';
-        this.elem.style.backgroundColor = 'greenyellow';
         this.elem.style.borderRadius = '50%';
         this.elem.style.transform = 'translate('+this._pos.x+'px,'+this._pos.y+'px)';
 
         this.elem.classList.add(cssClass);
 
+        this._soundPlaying = false;
+
         // Append DOM-Element
         parent.appendChild(this.elem);
+    }
+
+    addCssClass(cssClass){
+        this.elem.classList.add(cssClass);
     }
 
     setPos(pos){
@@ -36,6 +41,19 @@ export class Circle{
 
     handleBallCollision(ball, collisionPoint, normal){
         ball.reflect(collisionPoint, normal, this.bounciness);
+
+        if(!this._soundPlaying){
+            this._soundPlaying = true;
+            new Howl({
+                src: ['/Sounds/bumper.wav'],
+                autoplay: true,
+                volume: 3.0,
+            });
+
+            setTimeout(() => {
+                this._soundPlaying = false;
+            }, 300)
+        }
     }
 
 }

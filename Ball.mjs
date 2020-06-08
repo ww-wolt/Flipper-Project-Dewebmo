@@ -10,10 +10,10 @@ export class Ball{
 
         this._newPos = pos; 
         this.velocity = new Victor(0,0);
-        this._gravitiy = new Victor(0, 0.12);
+        this._gravitiy = new Victor(0, 0.09);
         this.gravityOn = true;
 
-        this._ms = 10;
+        this._ms = 8;
         this._bounciness = 0.7;
 
         this._velocityArrow = new Arrow(parent, 10);

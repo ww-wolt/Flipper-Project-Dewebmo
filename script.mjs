@@ -2,7 +2,6 @@ import { Table } from "./Table.mjs";
 import { Background } from "./Background.mjs";
 
 document.addEventListener('click', (event) => {
-    console.log('Hello');
     if (document.fullscreenElement) {
 		document.exitFullscreen();
 	} else {
@@ -14,5 +13,5 @@ document.addEventListener('click', (event) => {
 
 
 new Background(document.body);
-const table = new Table(document.body, 1200, 1900);
+const table = new Table(document.body, 1400, 2000);
 

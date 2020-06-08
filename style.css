@@ -11,7 +11,7 @@ body{
 
     
     /*Hide vertical scrollbar */
-    /* overflow-y: hidden;  */
+    overflow-y: hidden; 
 
     /* Hide horizontal scrollbar */
     overflow-x: hidden; 
@@ -25,8 +25,8 @@ body{
 
     position: absolute;
     top: -100px;
-    right: calc((100% - 1200px) / 2);
-    left: calc((100% - 1200px) / 2);
+    right: calc((100% - 1400px) / 2);
+    left: calc((100% - 1400px) / 2);
 
     overflow: hidden;
 }
@@ -113,54 +113,97 @@ button {
 
 .black-hole{
     z-index: -100;
-
-    /* transform: scale(10) !important; */
-
-    /* animation-name:  black-hole-grow;
-    animation-duration: 1.0s;
-    animation-iteration-count: 1; */
 }
 
-@keyframes black-hole-grow {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(2);
-    }
+.highscore-list{
+    width: 175px;
+    height: auto;
+    position: fixed;
+    top: 50px;
+    left: 70px;
+
+    font-family: 'Beon';
+    font-size: 22px;
+    color: white;
+
+    /* background-color: #2EFFF2; */
+
+    
+    filter: blur(0.2px);
+
+    /* box-shadow: inset 0 0 2px 1px #2EFFF2, 0 0 2px 1px #2EFFF2; 
+    border-radius: 10px;*/
 }
 
-.bumper{
+.highscore-list p {
+    text-align: center;
+    font-size: 32px;
+}
+.highscore-list ol li{
+    margin-bottom: 20px;
+}
+
+.score{
+    width: 180px;
+    height: auto;
+    position: fixed;
+    top: 50px;
+    right: 70px;
+
+    font-family: 'Beon';
+    font-size: 48px;
+    color: white;
+    text-align: center;
+    /* background-color: #2EFFF2; */
+
+    filter: blur(0.3px);
+}
+
+.score p{
+    margin-top: 32px;
+}
+
+
+.mars{
     background-image: url(./Assets/space1/mars.png);
     background-repeat: no-repeat;
     background-size: cover;
 }
 
-.bumper-old{
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: blueviolet;
-    transition: background-color 0.3s;
+.jupiter{
+    background-image: url(./Assets/space1/jupiter.png);
+    background-repeat: no-repeat;
+    background-size: cover;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
 }
 
-.bumper:hover{
-    background-color: blue;
-
-    animation-name: bumper-blink;
-    animation-duration: 0.3s;
-    animation-iteration-count: 3;
+.earth{
+    background-image: url(./Assets/space1/planet-earth.png);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
-@keyframes bumper-blink {
-    0% {box-shadow: 0px 0px 0px 0px greenyellow;}
-    100% {box-shadow: 20px 20px 40px 20px greenyellow;}
+.saturn{
+    background-image: url(./Assets/space1/uranus.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-size: 112px;
 }
+
+.satellite{
+    background-image: url(./Assets/satellite-rotated.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+
+.colored-circle{
+    background-color: #e97272;
+    z-index: -200;
+}
+
 
 .flipper-right{
     transform-origin: 82% 50%;
@@ -172,36 +215,11 @@ button {
     z-index: -1;
 }
 
-.neon-glow {
-    box-shadow:
-    0 0 0.1vw  0.4vw #fff7f7,   
-    0 0 0.4vw  0.6vw #e97272, 
-    0 0   4vw  0.4vw #e50b0b,
-  
-    inset 0 0 1.5vw  0.4vw #e50b0b,
-    inset 0 0 0.4vw  0.2vw #e97272,
-    inset 0 0 0.5vw  0.2vw #fff7f7;
-}
-
-.neon-text {
-    text-shadow: 
-    .1vw 0vw .25vw #ffd8d8, .2vw 0vw .25vw #ffd8d8, .4vw 0vw .25vw #ffd8d8, 
-  
-    .1vw 0vw   0vw #f25757, .2vw 0vw   0vw #f25757, .4vw 0vw   0vw #f25757,
-    .1vw 0vw  .1vw #f25757, .2vw 0vw  .1vw #f25757, .4vw 0vw  .1vw #f25757,
-    .1vw 0vw   2vw #f25757, .2vw 0vw   2vw #f25757, .4vw 0vw   2vw #f25757, 
-  
-    .1vw 0vw   1vw #e50b0b, .2vw 0vw   1vw #e50b0b, .4vw 0vw   5vw #e50b0b, 
-    .1vw 0vw   5vw #e50b0b, .2vw 0vw  20vw #e50b0b, .4vw 0vw  10vw #e50b0b,
-    .1vw 0vw  10vw #e50b0b, .2vw 0vw  30vw #e50b0b, .4vw 0vw  10vw #e50b0b;
-}
-
 .blur{
     filter: blur(8px);
 }
 
 .line{
-   
     height: 0px;
     box-shadow: 0 0 1px 1px #2EFFF2; 
     border: 1px solid #2EFFF2;
@@ -209,17 +227,11 @@ button {
     filter: blur(1px);
 }
 
+.invisible{
+    display: none;
+}
 
-/* 
-.flipper-left{
-    width: 100px;
-    height: auto;
-    position: absolute;
-    top: 500px;
-    left: 200px;
-    transform-origin: 18% 50%;
-    transform: rotateZ(32deg);
-} */
+
 
 
     

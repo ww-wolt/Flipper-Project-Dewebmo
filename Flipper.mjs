@@ -13,13 +13,13 @@ export class Flipper{
         this._key = key;
         this._width = 100;
 
-        this._ms = 2;
+        this._ms = 6;
         this._duration = 60;
         
         this.isKicking = false;
         this._currentTime = 0;
 
-        this._line = new Line(parent, pos, pos);
+        this._line = new Line(parent, pos, pos, 'invisible');
         this.updateLine();
 
         this._collisionShape = this._line.getCollisionShape();

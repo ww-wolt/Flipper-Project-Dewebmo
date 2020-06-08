@@ -16,12 +16,15 @@ export class Line{
     
         // Append DOM-Element
         parent.appendChild(this.line)
+
+        this._soundPlaying = false;
     }
 
     setCoordinates(a, b){
 
         this.a = a
         this.b = b
+       
 
         // Transformation
         const vec = b.clone().subtract(a)
@@ -30,8 +33,14 @@ export class Line{
         this.line.style.transform = 'translate('+this.a.x + 'px,'+this.a.y +'px)' + ' rotate('+angle+'deg)';
         this.line.style.width = vec.length()-2 + 'px';
 
-        this._collisionShape.a = this.a;
-        this._collisionShape.b = this.b;
+
+        const offsetVec = vec.normalize().multiplyScalar(3)
+        const newA = this.a.clone().add(offsetVec);
+        const newB = this.b.clone().subtract(offsetVec);
+
+        this._collisionShape.a = newA;
+        this._collisionShape.b = newB;
+
         this._collisionShape.hasMoved();
     }
 
@@ -50,8 +59,25 @@ export class Line{
 
     handleBallCollision(ball, collisionPoint, normal){
         ball.reflect(collisionPoint, normal, this.bounciness);
+
+        if(!this._soundPlaying){
+            this._soundPlaying = true;
+            new Howl({
+                src: ['/Sounds/hit.wav'],
+                autoplay: true,
+                volume: 0.4,
+            });
+
+            setTimeout(() => {
+                this._soundPlaying = false;
+            }, 250)
+        }
+
+        
     }
 
-
+    getLineVector(){
+        return this.b.clone().subtract(this.a);
+    }
 
 }
