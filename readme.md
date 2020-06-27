@@ -6,7 +6,7 @@
     $ npm start 
 
 2. Spiel starten  
-    $ cd ".../Flipper-Project/Client 
+    $ cd ".../Flipper-Project/Client  
     -> Live Server starten  
     -> Seite in Firefox öffnen! (Experimental Features müssen aktiviert sein)  
     (Chrome/Brave performt einiges langsamer und hat Scrolling-Probleme)
