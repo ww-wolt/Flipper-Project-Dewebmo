@@ -232,11 +232,9 @@ button {
     height: 0px;
     box-shadow: 0 0 4px 2px #2EFFF2; 
 
-    /* Too bad performance... */
-    /* box-shadow: 0 0 1px 1px #2EFFF2;
-    border: 1px solid #2EFFF2;
-    border-radius: 1px;
-    filter: blur(1px); */
+    /* For low performance devices */
+    /* box-shadow: 0 0 0 2px #2EFFF2; */
+
 }
 
 .invisible{

@@ -1,0 +1,17 @@
+Titel: Space Flippers
+Student: Jonas Wolter
+DEWEBMO / 2. Semester / 2020
+
+Kurzbeschreibung:
+In meiner Abschlussarbeit des Modul DEWEBMO designte und entwickelte ich ein Flipperkasten-Game für Web-Browser. Das Game basiert auf einer selbstgeschriebenen Physics- und Collision-Detection-Engine.
+
+
+
+© Jonas Wolter 2020
+
+Projekt benutzt folgende Open Source Libraries:
+howler.js
+simpleParallax.js
+victor.js
+
+Teile des Codes bauen auf den Codebeispielen von Marc Pilloud von exorciser.ch auf.
