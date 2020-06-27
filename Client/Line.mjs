@@ -24,7 +24,6 @@ export class Line{
     setCoordinates(a, b){
 
         this.a = a
-        console.log('Line -> setCoordinates -> this.a = a', this.a = a)
         this.b = b
        
 
@@ -35,7 +34,6 @@ export class Line{
         // Effektiv gezeichnete Linie um 1.5 rechts/links verkürzen -> führt zu schöneren Linienecken
         const offsetLineVec = vec.clone().normalize().multiplyScalar(1.5)
         const newLineA = this.a.clone().add(offsetLineVec);
-        console.log('Line -> setCoordinates -> newLineA', newLineA)
         this.line.style.transform = 'translate('+newLineA.x + 'px,'+newLineA.y +'px)' + ' rotate('+angle+'deg)';
         this.line.style.width = vec.length()-3 + 'px';
 
@@ -69,7 +67,7 @@ export class Line{
         if(!this._soundPlaying){
             this._soundPlaying = true;
             new Howl({
-                src: ['/Sounds/hit.wav'],
+                src: ['Sounds/hit.wav'],
                 autoplay: true,
                 volume: 0.4,
             });

@@ -59,8 +59,6 @@ export class BlackHole{
                 volume: 0.2,
             });
 
-           
-
             animationScaleUp.onfinish = function() {
                 this._animationPlaying = false;
             }.bind(this)

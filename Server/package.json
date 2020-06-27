@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Flipper-Projekt Servercode aus dem Dewebmo-Modul, DI 2. Semester, HSLU 2020",
   "main": "server.mjs",
+
   "scripts": {
     "start": "node server.mjs",
     "test": "echo \\\"Error: no test specified\\\" && exit 1"

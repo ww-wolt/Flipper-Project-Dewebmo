@@ -45,7 +45,7 @@ export class Circle{
         if(!this._soundPlaying){
             this._soundPlaying = true;
             new Howl({
-                src: ['/Sounds/bumper.wav'],
+                src: ['Sounds/bumper.wav'],
                 autoplay: true,
                 volume: 3.0,
             });

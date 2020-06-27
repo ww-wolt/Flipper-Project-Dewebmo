@@ -57,7 +57,7 @@ export class Table{
 
     startMusic(){
         this._music = new Howl({
-            src: ['/Sounds/race-car.mp3'],
+            src: ['Sounds/race-car.mp3'],
             autoplay: true,
             loop: true,
             volume: 0.4,
@@ -79,13 +79,18 @@ export class Table{
         this._music.pause();
         
         new Howl({
-            src: ['/Sounds/gameover.wav'],
+            src: ['Sounds/gameover.wav'],
             autoplay: true,
             volume: 5.0,
         });
 
         setTimeout(() => {
+
             window.alert('Game Over! \n\nDein Score: ' + this._score.score + ' Punkte')
+
+            this._highscoreList.addScore(this._playerName, this._score.score)
+
+            // Neues Spiel starten
             this._score.resetScore();
             this._lives = 3;
             this.askName();
@@ -276,10 +281,6 @@ export class Table{
             setTimeout(remove, i * 300 + 150)
         }
     }
-
-  
-
-
 
     openDoor(){
         const b = this._door.a.clone().add(this._door.getLineVector().multiplyScalar(0.63))
