@@ -31,4 +31,4 @@ sheet.innerHTML = '.line{box-shadow: 0 0 0 2px #FF45B5}'
 
 ## Anmerkungen
 
-Das Abrufen der der Highscores vom Server hat leider noch einen Bug, daher werden Beispieldaten angezeigt.
+Das Abrufen der der Highscores vom Server hatte einen Bug, daher werden momentan noch Beispieldaten angezeigt.
